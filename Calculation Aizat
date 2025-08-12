@@ -1,0 +1,390 @@
+// Main script for the interactive energy savings demo.
+// ... (comments as before) ...
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- Helper: Generic D3 Chart Setup Items ---
+    function setupChartAxesAndLabelsGlobal(svg, scales, margins, width, height, axisConfig) {
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`) 
+            .call(d3.axisBottom(scales.x).ticks(axisConfig.x.ticksType.every(axisConfig.x.ticksInterval)).tickFormat(d3.timeFormat(axisConfig.x.tickFormat)))
+            .selectAll("text") 
+            .style("text-anchor", "end").attr("dx", "-.8em").attr("dy", ".15em").attr("transform", "rotate(-45)");
+        svg.append("text").attr("class", "axis-label") 
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2)
+            .attr("y", height + margins.bottom / 1.5 + 15) 
+            .text(axisConfig.x.label);
+        svg.append("g").call(d3.axisLeft(scales.yLeft));
+        svg.append("text").attr("class", "axis-label") 
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margins.left + 15)
+            .attr("x", 0 - (height / 2))
+            .text(axisConfig.yLeft.label);
+        if (scales.yRight && axisConfig.yRight) {
+            svg.append("g").attr("transform", `translate(${width},0)`).call(d3.axisRight(scales.yRight));
+            svg.append("text").attr("class", "axis-label") 
+                .attr("transform", "rotate(-90)")
+                .attr("y", width + margins.right - 20) 
+                .attr("x", 0 - (height / 2))
+                .text(axisConfig.yRight.label);
+        }
+    }
+    function setupTooltipInteractionGlobal(svg, tooltip, data, scales, lineFocusCircles, bisector, dateFormatter, width, height, getTooltipHtmlCallback) {
+        const focus = svg.append("g").attr("class", "focus").style("display", "none"); 
+        
+        let focusLineStroke = "#1E3A8A"; // Default for light backgrounds
+        const chartWrapper = svg.node().closest(".chart-wrapper"); // Get the parent chart wrapper
+        if (chartWrapper) {
+            const bgColor = window.getComputedStyle(chartWrapper).backgroundColor;
+            // Check for the specific dark blue of the James chart IF its background was dark
+            // Since all chart backgrounds are now light blue (#D6EAF8), this check can be simplified
+            // or we can rely on CSS to set focus line color based on a class on the chart-wrapper if needed.
+            // For now, assuming light background means dark focus line.
+            // If James chart was still dark:
+            // if (bgColor === 'rgb(30, 58, 138)' || bgColor === '#1e3a8a') { 
+            //      focusLineStroke = "white";
+            // }
+        }
+        
+        focus.append("line").attr("class", "focus-line-y").attr("y1", 0).attr("y2", height)
+             .style("stroke", focusLineStroke).style("stroke-width", 0.5).style("stroke-dasharray", "3,3"); 
+        const circles = {}; 
+        for (const key in lineFocusCircles) {
+            circles[key] = focus.append("circle").attr("r", 4).style("fill", "none").style("stroke", lineFocusCircles[key].color);
+        }
+        svg.append("rect").attr("class", "overlay").attr("width", width).attr("height", height)
+            .style("fill", "none").style("pointer-events", "all")
+            .on("mouseover", () => { focus.style("display", null); tooltip.style("opacity", 1); })
+            .on("mouseout", () => { focus.style("display", "none"); tooltip.style("opacity", 0); })
+            .on("mousemove", function(event) { 
+                const x0 = scales.x.invert(d3.pointer(event, this)[0]); 
+                const i = bisector(data, x0, 1); 
+                const d0 = data[i - 1];
+                const d1 = data[i];
+                const d = (d1 && (x0 - d0.date > d1.date - x0)) ? d1 : d0; 
+                if (!d) return; 
+                focus.attr("transform", `translate(${scales.x(d.date)},0)`); 
+                for (const key in circles) {
+                    if (d[lineFocusCircles[key].dataKey] !== undefined && !isNaN(d[lineFocusCircles[key].dataKey])) {
+                       circles[key].attr("cy", lineFocusCircles[key].yScale(d[lineFocusCircles[key].dataKey]));
+                    } else { circles[key].attr("cy", -1000); }
+                }
+                tooltip.html(getTooltipHtmlCallback(d, dateFormatter)) 
+                       .style("left", (event.pageX + 15) + "px") 
+                       .style("top", (event.pageY - 28) + "px");
+            });
+    }
+    function createLegendGlobal(legendContainerSelector, legendData) {
+        const legend = d3.select(legendContainerSelector).html(""); 
+        legendData.forEach(item => {
+            const legendItem = legend.append("div").attr("class", "legend-item");
+            const colorBox = legendItem.append("span").attr("class", "legend-color-box");
+            if (item.dasharray && item.dasharray !== "none") { 
+                colorBox.style("background-color", "transparent")
+                        .style("border", `2px ${item.dasharray === "3,3" ? 'dotted' : 'dashed'} ${item.color}`);
+            } else { 
+                colorBox.style("background-color", item.color)
+                        .style("border", `2px solid ${item.color}`);
+            }
+            legendItem.append("span").text(item.label);
+        });
+    }
+
+    // --- James Chart ---
+    function drawJamesChart() { 
+        const chartId = "james-chart"; 
+        const containerElement = document.getElementById(chartId + '-container');
+        if (!containerElement) { console.error(chartId + " container not found"); return; }
+        const margin = {top: 30, right: 70, bottom: 70, left: 60};
+        const containerWidth = containerElement.clientWidth; 
+        const width = Math.max(100, containerWidth - margin.left - margin.right); 
+        const baseHeight = 300; 
+        const height = baseHeight * 1.3; 
+        const svg = d3.select("#" + chartId + "-svg")
+            .html("").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom)
+            .append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const tooltip = d3.select("#tooltip-james"); 
+        d3.csv("comparison_data_graphs.csv").then(function(data) {
+            const parseDate = d3.timeParse("%Y-%m-%d"); 
+            data.forEach(d => { 
+                d.date = parseDate(d.date); d.outdoor_temp = +d.outdoor_temp; 
+                /* d.james_temp = +d.james_temp; // James's temp line removed */
+                d.james_kwh = +d.james_kwh;
+                d.jim_kwh = +d.jim_kwh; 
+            });
+            const scales = {
+                x: d3.scaleTime().domain(d3.extent(data, d => d.date)).range([0, width]),
+                yLeft: d3.scaleLinear().domain([ 
+                    d3.min(data, d => d.outdoor_temp) - 2,
+                    d3.max(data, d => d.outdoor_temp) + 2
+                ]).range([height, 0]),
+                yRight: d3.scaleLinear().domain([ 
+                    0, 
+                    d3.max(data, d => Math.max(d.james_kwh, d.jim_kwh)) + 5 
+                ]).range([height, 0])
+            };
+            setupChartAxesAndLabelsGlobal(svg, scales, margin, width, height, {
+                x: { ticksType: d3.timeDay, ticksInterval: 7, tickFormat: "%d %b", label: "Date" },
+                yLeft: { label: "Outdoor Temperature (°C)" }, 
+                yRight: { label: "Energy (kWh)" }
+            });
+            svg.append("path").datum(data).attr("class", "line-outdoor-temp").attr("d", d3.line().x(d => scales.x(d.date)).y(d => scales.yLeft(d.outdoor_temp)));
+            svg.append("path").datum(data).attr("class", "line-james-kwh").attr("d", d3.line().x(d => scales.x(d.date)).y(d => scales.yRight(d.james_kwh)));
+            svg.append("path").datum(data).attr("class", "line-jim-kwh").attr("d", d3.line().x(d => scales.x(d.date)).y(d => scales.yRight(d.jim_kwh))); 
+            
+            createLegendGlobal("#" + chartId + "-legend", [
+                { label: "Outdoor Temp (°C)", color: "black", dasharray: "5,5" },    // Dashed
+                { label: "James' kWh", color: "#A78BFA", dasharray: "none" },       // Solid                          
+                { label: "Jim's kWh (21°C)", color: "red", dasharray: "none" }      // Solid
+            ]);
+
+            setupTooltipInteractionGlobal(svg, tooltip, data, scales, 
+                { 
+                    outdoor: { color: "black", yScale: scales.yLeft, dataKey: "outdoor_temp" },
+                    jamesKwh: { color: "#A78BFA", yScale: scales.yRight, dataKey: "james_kwh" },
+                    jimKwh: { color: "red", yScale: scales.yRight, dataKey: "jim_kwh" } 
+                },
+                d3.bisector(d => d.date).left, d3.timeFormat("%b %d, %Y"), width, height,
+                (d,dateFormatterFunc) => `<strong>${dateFormatterFunc(d.date)}</strong><br/>
+                         <span style="color:#A78BFA;">James' kWh:</span> ${d.james_kwh} kWh<br/>
+                         <span style="color:red;">Jim's kWh (21°C):</span> ${d.jim_kwh} kWh<br/>
+                         <span style="color:black;">Outdoor Temp:</span> ${d.outdoor_temp}°C`
+            );
+        }).catch(error => console.error("Error loading/parsing James chart data:", error));
+    }
+    
+    // --- Jim vs Smarter Jim Chart ---
+    function drawJimSmarterJimChart() { 
+        const chartId = "jim-smarter-jim-chart";
+        const legendContainerSelectorJim = "#jim-smarter-jim-legend"; 
+        const tooltipSelectorJim = "#tooltip-jim"; 
+        const dropdownSelector = "#smarter-jim-temp-select";
+        const containerElement = document.getElementById(chartId + '-container');
+         if (!containerElement) { console.error(chartId + " container not found"); return; }
+        const margin = {top: 30, right: 70, bottom: 70, left: 60};
+        const containerWidth = containerElement.clientWidth;
+        const width = Math.max(100, containerWidth - margin.left - margin.right);
+        const baseHeight = 300; 
+        const height = baseHeight * 1.3;
+        const svg = d3.select("#" + chartId + "-svg")
+            .html("").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom)
+            .append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const tooltip = d3.select(tooltipSelectorJim); 
+        const dropdown = d3.select(dropdownSelector);
+
+        d3.csv("comparison_data_graphs.csv").then(function(data) {
+            const parseDate = d3.timeParse("%Y-%m-%d");
+            data.forEach(d => {
+                d.date = parseDate(d.date); d.outdoor_temp = +d.outdoor_temp; d.jim_kwh = +d.jim_kwh;
+                d.smarter_jim_kwh_23 = +d.smarter_jim_kwh_23; d.smarter_jim_kwh = +d.smarter_jim_kwh; d.smarter_jim_kwh_25 = +d.smarter_jim_kwh_25;
+            });
+            const tempValues = data.map(d => d.outdoor_temp);
+            const kwhValues = data.flatMap(d => [d.jim_kwh, d.smarter_jim_kwh_23, d.smarter_jim_kwh, d.smarter_jim_kwh_25]);
+            const scales = {
+                x: d3.scaleTime().domain(d3.extent(data, d => d.date)).range([0, width]),
+                yLeft: d3.scaleLinear().domain([d3.min(tempValues.filter(v => !isNaN(v))) - 2, d3.max(tempValues.filter(v => !isNaN(v))) + 2]).range([height, 0]), 
+                yRight: d3.scaleLinear().domain([Math.min(0, d3.min(kwhValues.filter(v => !isNaN(v)))) -1, d3.max(kwhValues.filter(v => !isNaN(v))) + 5]).range([height, 0])  
+            };
+            setupChartAxesAndLabelsGlobal(svg, scales, margin, width, height, {
+                x: { ticksType: d3.timeDay, ticksInterval: 7, tickFormat: "%d %b", label: "Date" },
+                yLeft: { label: "Temperature (°C)" }, yRight: { label: "Energy (kWh)"}          
+            });
+            svg.append("path").datum(data).attr("class", "line-outdoor-temp").attr("d", d3.line().x(d => scales.x(d.date)).y(d => scales.yLeft(d.outdoor_temp))); 
+            svg.append("path").datum(data).attr("class", "line-jim-kwh").attr("d", d3.line().x(d => scales.x(d.date)).y(d => scales.yRight(d.jim_kwh)));      
+            let lineSmarterJim = svg.append("path").attr("class", "line-smarter-jim-kwh");
+            function updateSmarterJimLine(tempSetting) {
+                let columnKey = "smarter_jim_kwh"; 
+                if (tempSetting === "23") columnKey = "smarter_jim_kwh_23";
+                else if (tempSetting === "25") columnKey = "smarter_jim_kwh_25";
+                const lineGenSmarterJim = d3.line().x(d => scales.x(d.date)).y(d => scales.yRight(d[columnKey])); 
+                lineSmarterJim.datum(data).transition().duration(500).attr("d", lineGenSmarterJim);
+            }
+            updateSmarterJimLine(dropdown.property("value")); 
+            dropdown.on("change", function(event) { updateSmarterJimLine(event.target.value); });
+            
+            createLegendGlobal(legendContainerSelectorJim, [ // Correctly target Jim's legend div
+                { label: "Outdoor Temp (°C)", color: "black", dasharray: "5,5" }, // Dashed
+                { label: "Jim kWh (21°C)", color: "red", dasharray: "none" },       // Solid                      
+                { label: "Smarter Jim kWh", color: "green", dasharray: "none" }    // Solid                
+            ]);
+            setupTooltipInteractionGlobal(svg, tooltip, data, scales,
+                {
+                    outdoor: { color: "black", yScale: scales.yLeft, dataKey: "outdoor_temp" }, 
+                    jimKwh: { color: "red", yScale: scales.yRight, dataKey: "jim_kwh" },       
+                    smarterJim: { color: "green", yScale: scales.yRight, dataKey: () => {     
+                        const selected = dropdown.property("value");
+                        if (selected === "23") return "smarter_jim_kwh_23";
+                        if (selected === "25") return "smarter_jim_kwh_25";
+                        return "smarter_jim_kwh";
+                    }}
+                },
+                d3.bisector(d => d.date).left, d3.timeFormat("%b %d, %Y"), width, height,
+                (d, dateFormatterFunc) => {
+                    const selectedTemp = dropdown.property("value");
+                    let smarterJimKwhVal;
+                    if (selectedTemp === "23") smarterJimKwhVal = d.smarter_jim_kwh_23;
+                    else if (selectedTemp === "25") smarterJimKwhVal = d.smarter_jim_kwh_25;
+                    else smarterJimKwhVal = d.smarter_jim_kwh;
+                    return `<strong>${dateFormatterFunc(d.date)}</strong><br/>
+                            <span style="color:red;">Jim kWh (21°C):</span> ${d.jim_kwh} kWh<br/>
+                            <span style="color:green;">Smarter Jim kWh (${selectedTemp}°C):</span> ${smarterJimKwhVal !== undefined ? smarterJimKwhVal.toFixed(2) : 'N/A'} kWh<br/>
+                            <span style="color:black;">Outdoor Temp:</span> ${d.outdoor_temp}°C`;
+                }
+            );
+        }).catch(error => console.error("Error loading/parsing Jim chart data:", error));
+    }
+    
+
+    // --- Summary Chart ---
+    function drawSummaryChart() { 
+        const chartId = "summary-chart";
+        const containerElement = document.getElementById(chartId + '-container');
+        if (!containerElement) { console.error(chartId + " container not found"); return; }
+        const margin = {top: 30, right: 60, bottom: 70, left: 60};
+        const containerWidth = containerElement.clientWidth;
+        const width = Math.max(100, containerWidth - margin.left - margin.right);
+        const baseHeight = 300; 
+        const height = baseHeight * 1.3; 
+        const svg = d3.select("#" + chartId + "-svg")
+            .html("").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom)
+            .append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const tooltip = d3.select("#tooltip-summary");
+        d3.csv("comparison_data_graphs.csv").then(function(data) {
+            const parseDate = d3.timeParse("%Y-%m-%d"); 
+            data.forEach(d => {
+                d.date = parseDate(d.date); d.outdoor_temp = +d.outdoor_temp; d.james_temp = +d.james_temp;
+                d.jim_temp = +d.jim_temp; d.smarter_jim_temp = +d.smarter_jim_temp; d.samba_ta = +d.samba_ta;
+            });
+            const allTemps = data.flatMap(d => [d.outdoor_temp, d.james_temp, d.jim_temp, d.smarter_jim_temp, d.samba_ta].filter(t => !isNaN(t) && t !== null));
+            const tempMinAll = d3.min(allTemps); const tempMaxAll = d3.max(allTemps);
+            const scales = {
+                x: d3.scaleTime().domain(d3.extent(data, d => d.date)).range([0, width]),
+                yLeft: d3.scaleLinear().domain([tempMinAll - 2, tempMaxAll + 2]).range([height, 0])
+            };
+            setupChartAxesAndLabelsGlobal(svg, scales, margin, width, height, {
+                x: { ticksType: d3.timeDay, ticksInterval: 7, tickFormat: "%d %b", label: "Date" },
+                yLeft: { label: "Temperature (°C)" }
+            });
+            const lineDefs = {
+                outdoor: { class: "line-outdoor-temp", yKey: "outdoor_temp" }, james: { class: "line-james-temp", yKey: "james_temp" },
+                jim: { class: "line-jim-temp", yKey: "jim_temp" }, smarterJim: { class: "line-smarter-jim-temp", yKey: "smarter_jim_temp" },
+                samba: { class: "line-samba-ta", yKey: "samba_ta" }
+            };
+            for (const key in lineDefs) {
+                const lineData = data.filter(d => d[lineDefs[key].yKey] !== undefined && !isNaN(d[lineDefs[key].yKey]));
+                if(lineData.length > 0) { 
+                    svg.append("path").datum(lineData) 
+                       .attr("class", lineDefs[key].class)
+                       .attr("d", d3.line().x(d => scales.x(d.date)).y(d => scales.yLeft(d[lineDefs[key].yKey])));
+                }
+            }
+            createLegendGlobal("#" + chartId + "-legend", [ // Updated Legend for Summary Chart
+                { label: "Outdoor Temp", color: "black", dasharray: "5,5" },         // Dashed
+                { label: "James' Temp", color: "#60A5FA", dasharray: "5,5" },        // Dashed
+                { label: "Jim's Temp (21°C)", color: "#F87171", dasharray: "5,5" },  // Dashed
+                { label: "Smarter Jim (24°C)", color: "#34D399", dasharray: "5,5" },// Dashed
+                { label: "SAMBA Real Temp", color: "#F97316", dasharray: "none" }   // Solid Orange
+            ]);
+            const lineFocusCircleDefs = {
+                outdoor: { color: "black", yScale: scales.yLeft, dataKey: "outdoor_temp" }, james: { color: "#60A5FA", yScale: scales.yLeft, dataKey: "james_temp" },
+                jim: { color: "#F87171", yScale: scales.yLeft, dataKey: "jim_temp" }, smarterJim: { color: "#34D399", yScale: scales.yLeft, dataKey: "smarter_jim_temp" },
+                samba: { color: "#F97316", yScale: scales.yLeft, dataKey: "samba_ta" }
+            };
+            setupTooltipInteractionGlobal(svg, tooltip, data, scales, lineFocusCircleDefs,
+                d3.bisector(d => d.date).left, d3.timeFormat("%b %d, %Y"), width, height,
+                (d, dateFormatterFunc) => `<strong>${dateFormatterFunc(d.date)}</strong><br/>
+                                     <span style="color:black;">Outdoor:</span> ${d.outdoor_temp}°C<br/>
+                                     <span style="color:#F97316;">SAMBA:</span> ${(d.samba_ta !== undefined && !isNaN(d.samba_ta) ? d.samba_ta.toFixed(1) : 'N/A')}°C<br/>
+                                     <span style="color:#60A5FA;">James:</span> ${d.james_temp}°C<br/>
+                                     <span style="color:#34D399;">Smarter Jim (24°C):</span> ${d.smarter_jim_temp}°C<br/>
+                                     <span style="color:#F87171;">Jim (21°C):</span> ${d.jim_temp}°C`
+            );
+        }).catch(error => console.error("Error loading/parsing summary chart data:", error));
+    }
+    
+
+    // --- Calculator Script ---
+    (function setupInteractiveCalculator() {
+        let outsideTempValue = 28;
+        let insideTempValue = 24;
+        let hoursUsageValue = 8;
+        const tempMin = 10, tempMax = 40;
+        const insideTempMin = 15, insideTempMax = 30;
+        const hoursMin = 1, hoursMax = 24;
+        const FIXED_ELECTRICITY_RATE_CENTS = 33; 
+        const EFFICIENT_COOLING_TEMP = 24; 
+        const COST_AT_EFFICIENT_COOLING_8H = 1.10; 
+        const INEFFICIENT_COOLING_TEMP = 21; 
+        const COST_AT_INEFFICIENT_COOLING_8H = 1.48; 
+        const COST_PER_DEGREE_8H_COOLING = (COST_AT_INEFFICIENT_COOLING_8H - COST_AT_EFFICIENT_COOLING_8H) / (EFFICIENT_COOLING_TEMP - INEFFICIENT_COOLING_TEMP);
+        const EFFICIENT_HEATING_TEMP = 21; 
+        const COST_AT_EFFICIENT_HEATING_8H = 1.10; 
+        const INEFFICIENT_HEATING_TEMP_EXAMPLE = 23; 
+        const HEATING_INEFFICIENCY_COST_FACTOR = 1.25; 
+        const COST_AT_INEFFICIENT_HEATING_EXAMPLE_8H = COST_AT_EFFICIENT_HEATING_8H * HEATING_INEFFICIENCY_COST_FACTOR;
+        const COST_PER_DEGREE_8H_HEATING = (COST_AT_INEFFICIENT_HEATING_EXAMPLE_8H - COST_AT_EFFICIENT_HEATING_8H) / (INEFFICIENT_HEATING_TEMP_EXAMPLE - EFFICIENT_HEATING_TEMP);
+        const outsideTempValDisplay = document.getElementById('outside-temp-val');
+        const insideTempValDisplay = document.getElementById('inside-temp-val');
+        const hoursUsageValDisplay = document.getElementById('hours-usage-val');
+        const outsideTempIncrementBtn = document.getElementById('outside-temp-increment');
+        const outsideTempDecrementBtn = document.getElementById('outside-temp-decrement');
+        const insideTempIncrementBtn = document.getElementById('inside-temp-increment');
+        const insideTempDecrementBtn = document.getElementById('inside-temp-decrement');
+        const hoursUsageIncrementBtn = document.getElementById('hours-usage-increment');
+        const hoursUsageDecrementBtn = document.getElementById('hours-usage-decrement');
+        const usageCostValueDisplay = document.getElementById('usage-cost-value'); 
+        const kwhUsageValueDisplay = document.getElementById('kwh-usage-value');
+        const savingsRecommendationCaption = document.getElementById('savings-recommendation-caption'); 
+        const usageCostLabel = document.getElementById('usage-cost-label'); 
+        function calculateUserCostPerDayFor8Hours(outsideTemp, insideTemp) {
+            let costFor8Hours = 0;
+            if (outsideTemp > insideTemp) { 
+                costFor8Hours = COST_AT_EFFICIENT_COOLING_8H + (EFFICIENT_COOLING_TEMP - insideTemp) * COST_PER_DEGREE_8H_COOLING;
+            } else if (outsideTemp < insideTemp) { 
+                costFor8Hours = COST_AT_EFFICIENT_HEATING_8H + (insideTemp - EFFICIENT_HEATING_TEMP) * COST_PER_DEGREE_8H_HEATING;
+            }
+            return Math.max(0.01, costFor8Hours); 
+        }
+        function getRecommendationText(outsideTemp, insideTemp) { 
+            const dailyWastedCoolingAt21C = COST_AT_INEFFICIENT_COOLING_8H - COST_AT_EFFICIENT_COOLING_8H; 
+            const monthlyWastedCoolingAt21C = (dailyWastedCoolingAt21C * 30).toFixed(2);
+            const dailyExtraCostHeatingVsEfficient = COST_AT_INEFFICIENT_HEATING_EXAMPLE_8H - COST_AT_EFFICIENT_HEATING_8H; 
+            const monthlyExtraCostHeatingVsEfficient = (dailyExtraCostHeatingVsEfficient * 30).toFixed(2);
+            let message = ""; let isInefficient = false;
+            if (outsideTemp > insideTemp) { 
+                if (insideTemp >= 24 && insideTemp <= 26) { message = `You’re using an efficient cooling setting — great job! If you had chosen 21°C, you’d be spending about 34% more, or $${dailyWastedCoolingAt21C.toFixed(2)} wasted per day.`;
+                } else if (insideTemp === 21) { message = `Try increasing your AC temp to 24–26°C to save energy. Your current setting could be costing you about $${dailyWastedCoolingAt21C.toFixed(2)} extra per day, or over $${Math.floor(dailyWastedCoolingAt21C * 30)}/month.`; isInefficient = true;
+                } else if (insideTemp < 21) { const userCost8h = calculateUserCostPerDayFor8Hours(outsideTemp, insideTemp); const extraCostComparedTo21C = userCost8h - COST_AT_INEFFICIENT_COOLING_8H; const totalExtraCost = dailyWastedCoolingAt21C + Math.max(0, extraCostComparedTo21C); message = `This is a very cool setting. Increasing to 24-26°C could save you around $${totalExtraCost.toFixed(2)} per day.`; isInefficient = true;
+                } else { message = "Cooling temp is high — if still comfortable, you’re saving even more energy!";}
+            } else if (outsideTemp < insideTemp) { 
+                if (insideTemp >= 20 && insideTemp <= 21) { message = `You're using an efficient heating setting. Great job! Compared to a less efficient ${INEFFICIENT_HEATING_TEMP_EXAMPLE}°C, you're saving about $${dailyExtraCostHeatingVsEfficient.toFixed(2)} per day.`;
+                } else if (insideTemp > 21) { const userCost8h = calculateUserCostPerDayFor8Hours(outsideTemp, insideTemp); const extraCostComparedToEfficient = userCost8h - COST_AT_EFFICIENT_HEATING_8H; message = `Try lowering your heating temp to 20–21°C for better efficiency. Your current setting might be costing you an extra ~$${extraCostComparedToEfficient.toFixed(2)} per day, or over $${(extraCostComparedToEfficient*30).toFixed(0)}/month.`; isInefficient = true;
+                } else { message = "This heating setting is quite low. If comfortable, you're saving a good amount of energy!";}
+            } else { message = "Inside temp is close to outside — AC may not be needed.";}
+            return { text: message, inefficient: isInefficient };
+        }
+        function updateCalculatorDisplayAndInfo() { 
+            outsideTempValDisplay.textContent = outsideTempValue; insideTempValDisplay.textContent = insideTempValue; hoursUsageValDisplay.textContent = hoursUsageValue;
+            const electricityRateInDollars = FIXED_ELECTRICITY_RATE_CENTS / 100; 
+            const costFor8Hours = calculateUserCostPerDayFor8Hours(outsideTempValue, insideTempValue);
+            const estimatedUsageCost = (costFor8Hours / 8) * hoursUsageValue; 
+            let estimatedKwh = 0; if (electricityRateInDollars > 0 && estimatedUsageCost > 0) { estimatedKwh = estimatedUsageCost / electricityRateInDollars;}
+            usageCostLabel.textContent = "Estimated Usage Cost*"; usageCostValueDisplay.textContent = `$${estimatedUsageCost.toFixed(2)}`; kwhUsageValueDisplay.textContent = `${estimatedKwh.toFixed(1)} KWH`;
+            const recommendationInfo = getRecommendationText(outsideTempValue, insideTempValue);
+            savingsRecommendationCaption.textContent = recommendationInfo.text;
+            if (recommendationInfo.inefficient) { savingsRecommendationCaption.classList.add('recommendation-inefficient'); } else { savingsRecommendationCaption.classList.remove('recommendation-inefficient');}
+        }
+        outsideTempIncrementBtn.addEventListener('click', () => { if (outsideTempValue < tempMax) { outsideTempValue++; updateCalculatorDisplayAndInfo(); }});
+        outsideTempDecrementBtn.addEventListener('click', () => { if (outsideTempValue > tempMin) { outsideTempValue--; updateCalculatorDisplayAndInfo(); }});
+        insideTempIncrementBtn.addEventListener('click', () => { if (insideTempValue < insideTempMax) { insideTempValue++; updateCalculatorDisplayAndInfo(); }});
+        insideTempDecrementBtn.addEventListener('click', () => { if (insideTempValue > insideTempMin) { insideTempValue--; updateCalculatorDisplayAndInfo(); }});
+        hoursUsageIncrementBtn.addEventListener('click', () => { if (hoursUsageValue < hoursMax) { hoursUsageValue++; updateCalculatorDisplayAndInfo(); }});
+        hoursUsageDecrementBtn.addEventListener('click', () => { if (hoursUsageValue > hoursMin) { hoursUsageValue--; updateCalculatorDisplayAndInfo(); }});
+        updateCalculatorDisplayAndInfo(); 
+    })(); 
+    
+    drawJamesChart();
+    drawJimSmarterJimChart();
+    drawSummaryChart();
+});
