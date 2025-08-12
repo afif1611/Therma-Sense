@@ -1,1 +1,87 @@
+<div class="card">
+            <h2>Energy Saving Calculator</h2>
+            <label for="roomSize">Room Size (m²):</label>
+            <input type="number" id="roomSize" placeholder="e.g. 20" />
+
+            <label for="acPower">AC Power (W):</label>
+            <input type="number" id="acPower" placeholder="e.g. 1200" />
+
+            <label for="hours">Hours Used per Day:</label>
+            <input type="number" id="hours" placeholder="e.g. 8" />
+
+            <label for="rate">Electricity Rate (per kWh):</label>
+            <input type="number" id="rate" placeholder="e.g. 0.50" step="0.01" />
+
+            <button onclick="calculate()">Calculate</button>
+
+            <div class="result" id="resultBox" style="display:none;">
+                <p id="dailyCost"></p>
+                <p id="monthlyCost"></p>
+                <p id="savings"></p>
+                <canvas id="costChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let chartInstance = null;
+
+        function calculate() {
+            let power = parseFloat(document.getElementById('acPower').value); // in watts
+            let hours = parseFloat(document.getElementById('hours').value);
+            let rate = parseFloat(document.getElementById('rate').value); // per kWh
+
+            if (isNaN(power) || isNaN(hours) || isNaN(rate)) {
+                alert("Please fill all fields correctly.");
+                return;
+            }
+
+            let dailyKWh = (power * hours) / 1000;
+            let dailyCost = dailyKWh * rate;
+            let monthlyCost = dailyCost * 30;
+
+            // Assume smart system can save 20% energy
+            let savings = monthlyCost * 0.2;
+            let smartCost = monthlyCost - savings;
+
+            document.getElementById('dailyCost').innerText = `💰 Daily Cost: RM ${dailyCost.toFixed(2)}`;
+            document.getElementById('monthlyCost').innerText = `📅 Monthly Cost: RM ${monthlyCost.toFixed(2)}`;
+            document.getElementById('savings').innerText = `🌱 Estimated Monthly Savings: RM ${savings.toFixed(2)}`;
+
+            document.getElementById('resultBox').style.display = 'block';
+
+            // Chart.js visualization
+            let ctx = document.getElementById('costChart').getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Current Usage', 'Smart Usage', 'Savings'],
+                    datasets: [{
+                        label: 'Monthly Cost (RM)',
+                        data: [monthlyCost, smartCost, savings],
+                        backgroundColor: ['#e74c3c', '#3498db', '#2ecc71']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: {
+                            label: (context) => `RM ${context.raw.toFixed(2)}`
+                        }}
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
 
