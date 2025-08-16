@@ -1,0 +1,382 @@
+* --- Global & Typography --- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333; 
+    background-color: #F0F8FF; /* Overall page background, was #2563EB in user's file, reverting to original */
+}
+
+.content-container {
+    max-width: 1366px;
+    margin: 0 auto; 
+    padding: 20px; 
+    box-sizing: border-box; 
+}
+
+.section-title { 
+    font-size: 1.8em;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+
+h1 {
+    margin: 0;
+    padding: 1.5rem;
+}
+
+h2 { /* From user's style.css */
+    text-align: center;
+}
+
+/*--- Awareness Box ---*/
+.awareness-box {
+    background-color: #f0f8ff;
+    border-left: 5px solid #2e8b57;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-family: Arial, sans-serif;
+}
+
+.awareness-box h2 {
+    margin-top: 0;
+    color: #2e8b57;
+}
+
+.awareness-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.awareness-box li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+/* --- Section Backgrounds & Layout --- */
+header,
+.transition-section,
+footer {
+    background-color: #DEE6FF; /* From user's style.css */
+}
+
+.tool-section { /* Specific for tool section */
+    background-color: #3bb143; 
+    color: white; 
+    margin-bottom: 0 !important; 
+}
+.graph-james-section { /* James chart now uses light blue, matching others */
+    background-color: #EFF6FF; 
+    color: #1E3A8A; 
+}
+.graph-james-section .chart-title { /* Title for James chart needs to be dark on light BG */
+    color: #1E3A8A;
+}
+
+
+.graph-jim-section,
+.graph-summary-section {
+    background-color: #EFF6FF; 
+    color: #1E3A8A; 
+}
+/* The summary section from user's CSS had dark BG, harmonizing it */
+/* .graph-summary-section {
+    background-color: #2563EB;
+    color: white; 
+} */
+/* .graph-summary-section .chart-title,
+.graph-summary-section .chart-subtitle {
+    color: white;
+} */
+
+
+.white-content-block > .content-container { 
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 30px; 
+    text-align: center; 
+}
+.did-you-know blockquote, 
+.story-intro .follow-along-link { 
+    margin-left: auto;
+    margin-right: auto;
+}
+.did-you-know blockquote { padding-bottom: 0px;} 
+.story-intro .content-container p { margin-top: 10px; }
+
+
+ header, main > section {
+     margin-bottom: 20px; 
+ }
+ main > section:last-of-type { 
+    margin-bottom: 20px;
+ }
+ 
+
+/* --- Header --- */
+header .content-container {
+    display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 0px; margin-bottom: 0px; height: 474px;
+}
+.header-text { flex-basis: 55%; text-align: left; }
+header h1 {
+    color: #3bb143; font-size: 2.8em; font-weight: bold;
+    line-height: 1.2; margin-bottom: 0.5em; text-align: left; 
+}
+header p.subtitle { 
+    color: #3bb143; font-size: 1.1em; margin-top: 0; text-align: left; 
+}
+.header-image-container { flex-basis: 40%; text-align: right; }
+.header-image-container img { max-width: 100%; height: auto; max-height: 350px; }
+
+/* Style for the brand selection dropdown */
+#brand {
+    appearance: none; /* Removes default browser style */
+    background-color: #ffffff;
+    border: 2px solid #4CAF50; /* Green border for brand feel */
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    width: 220px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Add a custom arrow icon */
+#brand {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%234CAF50" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+}
+
+/* Hover effect */
+#brand:hover {
+    border-color: #45a049;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+/* Focus effect when clicked */
+#brand:focus {
+    outline: none;
+    border-color: #2e7d32;
+    box-shadow: 0 0 8px rgba(46, 125, 50, 0.6);
+}
+
+
+/* --- Transition (CTA) Section --- */
+.transition-section .content-container {
+    display: flex; align-items: center; justify-content: space-between; gap: 30px; text-align: left; 
+}
+.transition-content-left {
+    flex-basis: 55%; display: flex; flex-direction: column; align-items: flex-start; 
+}
+.transition-text { text-align: left; margin-bottom: 20px; }
+.transition-text p {
+    color: #214FE0; font-size: 2em; font-weight: bold;
+    line-height: 1.4; margin-bottom: 1em; 
+}
+.transition-text p:last-child { margin-bottom: 0; }
+.transition-image { flex-basis: 40%; text-align: right; }
+.transition-image img { max-width: 100%; max-height: 400px; width: auto; }
+.transition-section .method-buttons { text-align: center; }
+.method-buttons button {
+    background-color: #EDE9FE; border: 2px solid #5B21B6; color: #5B21B6; 
+    padding: 10px 25px; margin: 5px 10px 5px 0; border-radius: 20px; 
+    cursor: pointer; font-weight: bold; font-size: 1em;
+}
+.method-buttons button:hover { background-color: #DDD6FE; }
+
+/* --- Interactive Tool Section --- */
+.tool-section h2.section-title { margin-bottom: 30px; } 
+.tool-controls {
+    display: flex; justify-content: center; align-items: center; 
+    gap: 15px; margin-bottom: 20px; text-align: left; 
+}
+.tool-input-columns { display: flex; gap: 0; align-items: flex-start; }
+.control-column {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    position: relative; padding: 0 10px; color:white;
+}
+.tool-input-columns .control-column:not(:last-of-type):after { 
+    content: ''; position: absolute; right: 0; top: 10%; bottom: 10%;
+    width: 2px; background-color: rgba(255, 255, 255, 0.3); 
+}
+.control-column label { font-size: 1.0em; margin-bottom: 20px; }
+.control-button {
+    background: none; border: none; color: #FDE047; font-size: 3.25em; 
+    font-weight: bold; cursor: pointer; padding: 8px; line-height: 1;
+}
+.value-display { font-size: 3.9em; font-weight: bold; margin: 10px 0; }
+.vertical-separator-major { 
+    width: 2px; background-color: rgba(255, 255, 255, 0.5); height: 230px; 
+}
+.savings-display-container { 
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    padding-left: 10px; width: 320px; 
+}
+.savings-values-display { 
+    background-color: white; color: #3bb143; padding: 20px; border-radius: 10px;
+    text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 100%; box-sizing: border-box;
+    height: 350px; display: flex; flex-direction: column; justify-content: center; 
+}
+.savings-values-display .estimated-usage-cost-label { font-size: 1em; font-weight: normal; margin-bottom: 5px; }
+.savings-values-display .usage-cost-display { font-size: 2.0em; font-weight: bold; margin: 0; }
+.savings-values-display .kwh-usage-display { font-size: 2.8em; font-weight: bold; margin: 3px 0 10px 0; }
+.savings-caption { 
+    font-size: 1em; font-weight: bold; line-height: 1.3; text-align: center;
+    width: 100%; box-sizing: border-box; margin-top: 10px; color: #3bb143; 
+}
+.recommendation-inefficient { color: red !important; }
+.electricity-rate-container {
+    text-align: center; margin-top: 20px; margin-bottom: 15px; 
+    color: white; /* Ensure text is white on blue background */
+    font-size: 0.85em; padding: 0 20px; line-height: 1.5; 
+    max-width: 700px; margin-left: auto; margin-right: auto; 
+}
+.tool-section .disclaimer { 
+    margin-top: 5px;
+    text-align: center; 
+    color: white; 
+}
+
+/* --- D3 Chart Common Styles --- */
+.chart-wrapper { 
+    width: 100%; max-width: 930px; 
+    margin: 0 auto; padding: 20px;
+    border-radius: 8px; box-sizing: border-box; text-align: left; 
+}
+ /* Unified light blue background for ALL charts */
+#james-chart-container.chart-wrapper, 
+#jim-smarter-jim-chart-container.chart-wrapper,
+#summary-chart-container.chart-wrapper { 
+    background-color: #D6EAF8; 
+} 
+
+.axis-label { 
+    font-size: 0.9em;
+    text-anchor: middle;
+    fill: #1E3A8A; /* Unified dark blue for all axis labels on light backgrounds */
+}
+.tick text { 
+    font-size: 0.8em;
+    fill: #1E3A8A; /* Unified dark blue for all tick text on light backgrounds */
+}
+.tick line, 
+.domain { 
+    stroke: rgba(30, 58, 138, 0.3); /* Unified darker, less opaque lines for all ticks/domains on light backgrounds */
+}
+
+/* Line Styles - kWh SOLID, Temp DASHED */
+.line-outdoor-temp      { fill: none; stroke: black;   stroke-width: 2px; stroke-dasharray: 5,5; } /* TEMP - Dashed */
+.line-james-temp        { fill: none; stroke: #60A5FA; stroke-width: 2.5px; stroke-dasharray: 5,5; } /* TEMP - Dashed Blue */
+.line-james-kwh         { fill: none; stroke: #A78BFA; stroke-width: 2.5px; /* KWH - Solid Purple */ } 
+.line-jim-temp          { fill: none; stroke: #F87171; stroke-width: 2.5px; stroke-dasharray: 5,5;} /* TEMP - Dashed Red/Coral */
+.line-jim-kwh           { fill: none; stroke: red;      stroke-width: 2.5px; /* KWH - Solid Red */ }
+.line-smarter-jim-temp    { fill: none; stroke: #34D399; stroke-width: 2.5px; stroke-dasharray: 5,5;} /* TEMP - Dashed Green */
+.line-smarter-jim-kwh     { fill: none; stroke: green;    stroke-width: 2.5px; /* KWH - Solid Green */ }
+.line-samba-ta          { fill: none; stroke: #F97316; stroke-width: 2.5px; /* SAMBA TEMP - Solid Orange */ } 
+
+
+.tooltip {
+    position: absolute; text-align: left; padding: 8px; font: 12px sans-serif;
+    background: rgba(240, 240, 240, 0.95); border: 1px solid #ccc; border-radius: 8px;
+    pointer-events: none; opacity: 0; color: black; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.legend-container { 
+    margin-top: 15px; display: flex; justify-content: center;
+    gap: 15px; font-size: 0.9em; flex-wrap: wrap; 
+    color: #1E3A8A; /* Unified legend text color (for light backgrounds) */
+}
+/* Specific legend for James chart if its background were still dark (not needed now) */
+/* #james-chart-legend { color: white; }  */
+
+
+.legend-item { display: flex; align-items: center; }
+.legend-color-box { width: 20px; height: 10px; margin-right: 5px; display: inline-block; }
+
+.smarter-jim-dropdown-container {
+    text-align: center; margin-bottom: 20px; color: #1E3A8A; /* Color from user's style.css was #214FE0 */
+}
+.smarter-jim-dropdown-container label { margin-right: 10px; font-weight: bold; }
+.smarter-jim-dropdown-container select {
+    display: inline-block;
+    width: auto;
+    padding: 8px 30px 8px 10px; 
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1.5;
+    color: #1E3A8A; /* Color from user's style.css was #214FE0 */
+    background-color: white;
+    border: 1px solid #1E3A8A; /* Border from user's style.css was #214FE0 */
+    border-radius: 5px; 
+    position: relative; 
+    cursor: pointer;
+}
+.smarter-jim-dropdown-container select::after {
+    content: '▼'; 
+    font-size: 0.9em;
+    color: #1E3A8A; /* Color from user's style.css was #214FE0 */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; 
+}
+
+.graph-james-section .content-container,
+.graph-jim-section .content-container,
+.graph-summary-section .content-container { 
+    padding-top: 20px; 
+    padding-bottom: 20px; 
+    text-align: center; 
+}
+.graph-summary-section .chart-subtitle {
+    color: #1E3A8A; /* Adjusted to dark blue for light BG */
+    text-align: center; font-size: 1.1em;
+    line-height: 1.6; max-width: 800px; margin: 0 auto 20px auto;
+}
+
+.graph-jim-section .content-container{ 
+    background-color: #D6EAF8;
+}
+
+.graph-jim-section .graph-description{ 
+    font-size: 1em; color: #1E3A8A; margin-top: 15px; text-align: center;
+}
+
+/* Footer Styles */
+footer .content-container {
+    text-align: left; 
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+footer h4 {
+    color: #1E3A8A; 
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+.sources-list {
+    list-style-type: disc; 
+    padding-left: 20px; 
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 0.8em; 
+    color: #333; 
+}
+.sources-list li {
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+.sources-list a {
+    color: #1E3A8A;
+    text-decoration: underline;
+}
+.sources-list a:hover {
+    text-decoration: none;
+}
