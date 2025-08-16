@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Efficient Thermostat Control System</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script> 
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>ThermaSense</h1>
+    </header>
+
+  <main>
+
+    <!--Did You Know Section-->
+
+    <div class="awareness-box">
+    <h2>💡 Did You Know?</h2>
+    <ul>
+        <li>Setting your thermostat just 1°C higher during high temperature or 1°C lower in low temperature can save up to 10% on your energy bill.</li>
+        <li>Regularly maintaining your AC can improve efficiency by up to 20%.</li>
+        <li>Smart thermostat settings help reduce carbon emissions and protect the environment.</li>
+        <li>Closing curtains during hot afternoons reduces heat gain and cooling costs.</li>
+    </ul>
+</div>
+
+
+    <!-- Interactive Tool Section -->
+    <section class="tool-section">
+      <div class="content-container">
+        <h2 class="section-title">Energy Efficient Thermostat Control System</h2>
+   
+        <!-- Air Conditioner Brand Selection -->
+<div class="control-column">
+    <label for="brand">Select Brand:</label>
+    <select id="brand" name="brand">
+        <option value="">--Choose a brand--</option>
+        <option value="samsung">Samsung</option>
+        <option value="lg">LG</option>
+        <option value="daikin">Daikin</option>
+        <option value="panasonic">Panasonic</option>
+        <option value="mitsubishi">Mitsubishi Electric</option>
+    </select>
+
+        <div class="tool-controls">
+            <div class="tool-input-columns">
+                <div class="control-column">
+                    <label for="outside-temp-val">Outside Temp °C</label>
+                    <button class="control-button" id="outside-temp-increment">+</button>
+                    <span class="value-display" id="outside-temp-val">28</span>
+                    <button class="control-button" id="outside-temp-decrement">−</button>
+                </div>
+
+                <div class="control-column">
+                    <label for="hours-usage-val">Hours of Usage</label>
+                    <button class="control-button" id="hours-usage-increment">+</button>
+                    <span class="value-display" id="hours-usage-val">8</span>
+                    <button class="control-button" id="hours-usage-decrement">−</button>
+                </div>
+
+                <div class="control-column">
+                    <label for="inside-temp-val">Inside Temp °C</label>
+                    <button class="control-button" id="inside-temp-increment">+</button>
+                    <span class="value-display" id="inside-temp-val">24</span>
+                    <button class="control-button" id="inside-temp-decrement">−</button>
+                </div>
+
+        
+            </div>
+            <div class="vertical-separator-major"></div>
+            <div class="savings-display-container">
+                <div class="savings-values-display"> 
+                    <p class="estimated-usage-cost-label" id="usage-cost-label">Estimated Usage Cost*</p>
+                    <p class="usage-cost-display" id="usage-cost-value">$0.00</p>
+                    <p class="kwh-usage-display" id="kwh-usage-value">0.0 KWH</p>
+                    <p class="savings-caption" id="savings-recommendation-caption">Dynamic recommendation here.</p>
+                </div>
+            </div>
+        </div>
+        <div class="electricity-rate-container">
+            <span class="rate-unit">Calculations are based on a 2.5kW reverse cycle split system air conditioner, operating in a small to medium room (10–20 m²) for 8 hours per day.<br>Estimated costs use the 2025 national average electricity rate of 33c/kWh, and energy usage figures are adapted from Canstar Blue’s air conditioner efficiency review.</span>
+        </div>
+        <p class="disclaimer">*This tool only provide estimation based on the inputted data by the user.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
