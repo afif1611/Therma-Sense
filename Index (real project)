@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Energy Efficient Thermostat Control System</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script> 
+    <script src="calculation.js"></script> 
     <link rel="stylesheet" href="style.css">
+    <!--link rel="icon" href="Company_Logo-removebg-preview.png" code for icon-->
 </head>
 <body>
     <header>
-        <h1>ThermaSense</h1>
+        <div class="logo-title">
+            <img src="Company_Logo-removebg-preview" alt="ThermaSense Logo">
+            <h1>ThermaSense</h1>
+        </div>
     </header>
 
   <main>
@@ -42,6 +46,15 @@
         <option value="daikin">Daikin</option>
         <option value="panasonic">Panasonic</option>
         <option value="mitsubishi">Mitsubishi Electric</option>
+    </select>
+
+            <!-- Calculation Rate Selection -->
+<div class="control-column">
+    <label for="rate">Select Rate:</label>
+    <select id="rate" name="rate">
+        <option value="">--Choose a rate--</option>
+        <option value="offpeak_hrs">Off-peak</option>
+        <option value="peak_hrs">Peak </option>
     </select>
 
         <div class="tool-controls">
