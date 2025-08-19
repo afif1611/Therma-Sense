@@ -67,10 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         function updateCalculatorDisplayAndInfo() { 
             outsideTempValDisplay.textContent = outsideTempValue; insideTempValDisplay.textContent = insideTempValue; hoursUsageValDisplay.textContent = hoursUsageValue;
-            const electricityRateInDollars = FIXED_ELECTRICITY_RATE_CENTS / 100; 
+            const electricityRateInRM = FIXED_ELECTRICITY_RATE_CENTS / 100; 
             const costFor8Hours = calculateUserCostPerDayFor8Hours(outsideTempValue, insideTempValue);
             const estimatedUsageCost = (costFor8Hours / 8) * hoursUsageValue; 
-            let estimatedKwh = 0; if (electricityRateInDollars > 0 && estimatedUsageCost > 0) { estimatedKwh = estimatedUsageCost / electricityRateInDollars;}
+            let estimatedKwh = 0; if (electricityRateInRM > 0 && estimatedUsageCost > 0) { estimatedKwh = estimatedUsageCost / electricityRateInRM;}
             usageCostLabel.textContent = "Estimated Usage Cost*"; usageCostValueDisplay.textContent = `RM${estimatedUsageCost.toFixed(2)}`; kwhUsageValueDisplay.textContent = `${estimatedKwh.toFixed(1)} KWH`;
             const recommendationInfo = getRecommendationText(outsideTempValue, insideTempValue);
             savingsRecommendationCaption.textContent = recommendationInfo.text;
