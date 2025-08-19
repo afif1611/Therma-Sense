@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const tempMin = 10, tempMax = 40;
         const insideTempMin = 16, insideTempMax = 30;
         const hoursMin = 1, hoursMax = 24;
-        const FIXED_ELECTRICITY_RATE_CENTS = 28.52; 
+        const FIXED_ELECTRICITY_RATE_CENTS = 24.43; 
         const EFFICIENT_COOLING_TEMP = 24; 
-        const COST_AT_EFFICIENT_COOLING_8H = 1.14; 
+        const COST_AT_EFFICIENT_COOLING_8H = 1.36; // Assume 0.7kWh per hour
         const INEFFICIENT_COOLING_TEMP = 21; 
-        const COST_AT_INEFFICIENT_COOLING_8H = 1.60; 
+        const COST_AT_INEFFICIENT_COOLING_8H = 2.15; // Assume 1.1kWh per hour
         const COST_PER_DEGREE_8H_COOLING = (COST_AT_INEFFICIENT_COOLING_8H - COST_AT_EFFICIENT_COOLING_8H) / (EFFICIENT_COOLING_TEMP - INEFFICIENT_COOLING_TEMP);
         const EFFICIENT_HEATING_TEMP = 21; 
-        const COST_AT_EFFICIENT_HEATING_8H = 1.14; 
+        const COST_AT_EFFICIENT_HEATING_8H = 1.36; 
         const INEFFICIENT_HEATING_TEMP_EXAMPLE = 23; 
         const HEATING_INEFFICIENCY_COST_FACTOR = 1.25; 
         const COST_AT_INEFFICIENT_HEATING_EXAMPLE_8H = COST_AT_EFFICIENT_HEATING_8H * HEATING_INEFFICIENCY_COST_FACTOR;
