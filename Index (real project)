@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="logo-title">
-            <img src="Company_Logo-removebg-preview" alt="ThermaSense Logo">
+            <img src="images/Company_Logo-removebg-preview.png" alt="ThermaSense Logo" width="120" height="120">
             <h1>ThermaSense</h1>
         </div>
     </header>
@@ -36,26 +36,14 @@
       <div class="content-container">
         <h2 class="section-title">Energy Efficient Thermostat Control System</h2>
    
-        <!-- Air Conditioner Brand Selection -->
+        <!-- Air Conditioner Tariff Selection -->
 <div class="control-column">
-    <label for="brand">Select Brand:</label>
-    <select id="brand" name="brand">
-        <option value="">--Choose a brand--</option>
-        <option value="samsung">Samsung</option>
-        <option value="lg">LG</option>
-        <option value="daikin">Daikin</option>
-        <option value="panasonic">Panasonic</option>
-        <option value="mitsubishi">Mitsubishi Electric</option>
+    <label for="tariffselect">Electricity Tariff:</label>
+    <select id="tariffselect">
+        <option value="peak" selected>Peak Hours (28.52 c/kWh)</option>
+        <option value="nonpeak">Non-Peak Hours (24.43 c/kWh)</option>
     </select>
 
-            <!-- Calculation Rate Selection -->
-<div class="control-column">
-    <label for="rate">Select Rate:</label>
-    <select id="rate" name="rate">
-        <option value="">--Choose a rate--</option>
-        <option value="offpeak_hrs">Off-peak</option>
-        <option value="peak_hrs">Peak </option>
-    </select>
 
         <div class="tool-controls">
             <div class="tool-input-columns">
@@ -101,6 +89,6 @@
 
   </main>
 
-  <script src="script.js"></script>
+  <script src="calculation.js"></script>
 </body>
 </html>
