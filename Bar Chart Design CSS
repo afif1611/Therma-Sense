@@ -1,0 +1,96 @@
+/* --- Chart.js Graph Styling --- */
+.chart-container {
+  background-color: #FFFFFF;   /* White card background */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 30px auto;
+  max-width: 900px;
+}
+
+/* Title styling inside chart (Chart.js options handle text color, but this ensures consistency) */
+.chart-title {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: #1E3A8A; /* Dark blue from your theme */
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* Chart axis labels */
+canvas {
+  background-color: #F0F8FF; /* Matches page bg */
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* Legend styling */
+.chartjs-legend ul {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 15px 0 0 0;
+  padding: 0;
+}
+
+.chartjs-legend li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  color: #1E3A8A; /* Dark blue text */
+  font-weight: bold;
+}
+
+.chartjs-legend li span {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  border-radius: 4px;
+}
+
+/* Tooltip (popup on hover) */
+.chartjs-tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #3bb143; /* Green border */
+  color: #333;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.85em;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Make the whole page background green */
+body {
+  background-color: #3bb143; /* Green background */
+  margin: 10;
+  font-family: Arial, sans-serif;
+}
+
+/* Chart container styling */
+.chart-container {
+  background-color: #FFFFFF;   /* White card for contrast */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  margin: 40px auto;
+  max-width: 900px;
+}
+
+/* Title inside chart */
+.chart-title {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: #1E3A8A; /* Dark blue */
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* Chart background */
+canvas {
+  background-color: #F0F8FF; /* Light blue plotting area */
+  border-radius: 8px;
+  padding: 10px;
+}
