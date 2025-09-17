@@ -1,10 +1,26 @@
 * --- Global & Typography --- */
+header {
+    background: #265745;
+    color: white;
+    padding: 1rem;
+}
+
+.logo-title {
+    display: flex;
+    align-items: center; /* aligns logo and text vertically */
+}
+
+.logo-title img {
+    height: 50px; /* adjust logo size */
+    margin-right: 10px; /* spacing between logo and text */
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     color: #333; 
-    background-color: #F0F8FF; /* Overall page background, was #2563EB in user's file, reverting to original */
+    background-color: #F0F8FF;
 }
 
 .content-container {
@@ -34,7 +50,7 @@ h2 { /* From user's style.css */
 /*--- Awareness Box ---*/
 .awareness-box {
     background-color: #f0f8ff;
-    border-left: 5px solid #2e8b57;
+    border-left: 5px solid #265745;
     padding: 15px 20px;
     margin-bottom: 20px;
     border-radius: 6px;
@@ -43,7 +59,7 @@ h2 { /* From user's style.css */
 
 .awareness-box h2 {
     margin-top: 0;
-    color: #2e8b57;
+    color: #265745;
 }
 
 .awareness-box ul {
@@ -64,33 +80,10 @@ footer {
 }
 
 .tool-section { /* Specific for tool section */
-    background-color: #3bb143; 
+    background-color: #265745; 
     color: white; 
     margin-bottom: 0 !important; 
 }
-.graph-james-section { /* James chart now uses light blue, matching others */
-    background-color: #EFF6FF; 
-    color: #1E3A8A; 
-}
-.graph-james-section .chart-title { /* Title for James chart needs to be dark on light BG */
-    color: #1E3A8A;
-}
-
-
-.graph-jim-section,
-.graph-summary-section {
-    background-color: #EFF6FF; 
-    color: #1E3A8A; 
-}
-/* The summary section from user's CSS had dark BG, harmonizing it */
-/* .graph-summary-section {
-    background-color: #2563EB;
-    color: white; 
-} */
-/* .graph-summary-section .chart-title,
-.graph-summary-section .chart-subtitle {
-    color: white;
-} */
 
 
 .white-content-block > .content-container { 
@@ -135,7 +128,7 @@ header p.subtitle {
 #brand {
     appearance: none; /* Removes default browser style */
     background-color: #ffffff;
-    border: 2px solid #4CAF50; /* Green border for brand feel */
+    border: 2px solid #265745; /* Green border for brand feel */
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 16px;
@@ -146,13 +139,6 @@ header p.subtitle {
     transition: all 0.3s ease;
 }
 
-/* Add a custom arrow icon */
-#brand {
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%234CAF50" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 20px;
-}
 
 /* Hover effect */
 #brand:hover {
@@ -251,132 +237,101 @@ header p.subtitle {
     margin: 0 auto; padding: 20px;
     border-radius: 8px; box-sizing: border-box; text-align: left; 
 }
- /* Unified light blue background for ALL charts */
-#james-chart-container.chart-wrapper, 
-#jim-smarter-jim-chart-container.chart-wrapper,
-#summary-chart-container.chart-wrapper { 
-    background-color: #D6EAF8; 
-} 
-
-.axis-label { 
-    font-size: 0.9em;
-    text-anchor: middle;
-    fill: #1E3A8A; /* Unified dark blue for all axis labels on light backgrounds */
-}
-.tick text { 
-    font-size: 0.8em;
-    fill: #1E3A8A; /* Unified dark blue for all tick text on light backgrounds */
-}
-.tick line, 
-.domain { 
-    stroke: rgba(30, 58, 138, 0.3); /* Unified darker, less opaque lines for all ticks/domains on light backgrounds */
-}
-
-/* Line Styles - kWh SOLID, Temp DASHED */
-.line-outdoor-temp      { fill: none; stroke: black;   stroke-width: 2px; stroke-dasharray: 5,5; } /* TEMP - Dashed */
-.line-james-temp        { fill: none; stroke: #60A5FA; stroke-width: 2.5px; stroke-dasharray: 5,5; } /* TEMP - Dashed Blue */
-.line-james-kwh         { fill: none; stroke: #A78BFA; stroke-width: 2.5px; /* KWH - Solid Purple */ } 
-.line-jim-temp          { fill: none; stroke: #F87171; stroke-width: 2.5px; stroke-dasharray: 5,5;} /* TEMP - Dashed Red/Coral */
-.line-jim-kwh           { fill: none; stroke: red;      stroke-width: 2.5px; /* KWH - Solid Red */ }
-.line-smarter-jim-temp    { fill: none; stroke: #34D399; stroke-width: 2.5px; stroke-dasharray: 5,5;} /* TEMP - Dashed Green */
-.line-smarter-jim-kwh     { fill: none; stroke: green;    stroke-width: 2.5px; /* KWH - Solid Green */ }
-.line-samba-ta          { fill: none; stroke: #F97316; stroke-width: 2.5px; /* SAMBA TEMP - Solid Orange */ } 
 
 
-.tooltip {
-    position: absolute; text-align: left; padding: 8px; font: 12px sans-serif;
-    background: rgba(240, 240, 240, 0.95); border: 1px solid #ccc; border-radius: 8px;
-    pointer-events: none; opacity: 0; color: black; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-.legend-container { 
-    margin-top: 15px; display: flex; justify-content: center;
-    gap: 15px; font-size: 0.9em; flex-wrap: wrap; 
-    color: #1E3A8A; /* Unified legend text color (for light backgrounds) */
-}
-/* Specific legend for James chart if its background were still dark (not needed now) */
-/* #james-chart-legend { color: white; }  */
-
-
-.legend-item { display: flex; align-items: center; }
-.legend-color-box { width: 20px; height: 10px; margin-right: 5px; display: inline-block; }
-
-.smarter-jim-dropdown-container {
-    text-align: center; margin-bottom: 20px; color: #1E3A8A; /* Color from user's style.css was #214FE0 */
-}
-.smarter-jim-dropdown-container label { margin-right: 10px; font-weight: bold; }
-.smarter-jim-dropdown-container select {
-    display: inline-block;
-    width: auto;
-    padding: 8px 30px 8px 10px; 
-    font-size: 1rem;
-    font-weight: bold;
-    line-height: 1.5;
-    color: #1E3A8A; /* Color from user's style.css was #214FE0 */
-    background-color: white;
-    border: 1px solid #1E3A8A; /* Border from user's style.css was #214FE0 */
-    border-radius: 5px; 
-    position: relative; 
-    cursor: pointer;
-}
-.smarter-jim-dropdown-container select::after {
-    content: '▼'; 
-    font-size: 0.9em;
-    color: #1E3A8A; /* Color from user's style.css was #214FE0 */
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none; 
+/* --- Chart.js Graph Styling --- */
+.chart-container {
+  background-color: #FFFFFF;   /* White card background */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 30px auto;
+  max-width: 900px;
 }
 
-.graph-james-section .content-container,
-.graph-jim-section .content-container,
-.graph-summary-section .content-container { 
-    padding-top: 20px; 
-    padding-bottom: 20px; 
-    text-align: center; 
-}
-.graph-summary-section .chart-subtitle {
-    color: #1E3A8A; /* Adjusted to dark blue for light BG */
-    text-align: center; font-size: 1.1em;
-    line-height: 1.6; max-width: 800px; margin: 0 auto 20px auto;
+/* Title styling inside chart (Chart.js options handle text color, but this ensures consistency) */
+.chart-title {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: #1E3A8A; /* Dark blue from your theme */
+  text-align: center;
+  margin-bottom: 15px;
 }
 
-.graph-jim-section .content-container{ 
-    background-color: #D6EAF8;
+/* Chart axis labels */
+canvas {
+  background-color: #F0F8FF; /* Matches page bg */
+  border-radius: 8px;
+  padding: 10px;
 }
 
-.graph-jim-section .graph-description{ 
-    font-size: 1em; color: #1E3A8A; margin-top: 15px; text-align: center;
+/* Legend styling */
+.chartjs-legend ul {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 15px 0 0 0;
+  padding: 0;
 }
 
-/* Footer Styles */
-footer .content-container {
-    text-align: left; 
-    padding-top: 30px;
-    padding-bottom: 30px;
+.chartjs-legend li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  color: #1E3A8A; /* Dark blue text */
+  font-weight: bold;
 }
-footer h4 {
-    color: #1E3A8A; 
-    font-size: 1.1em;
-    margin-bottom: 10px;
+
+.chartjs-legend li span {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  border-radius: 4px;
 }
-.sources-list {
-    list-style-type: disc; 
-    padding-left: 20px; 
-    margin-top: 0;
-    margin-bottom: 0;
-    font-size: 0.8em; 
-    color: #333; 
+
+/* Tooltip (popup on hover) */
+.chartjs-tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #3bb143; /* Green border */
+  color: #333;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.85em;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
-.sources-list li {
-    margin-bottom: 5px;
-    line-height: 1.4;
+
+/* Make the whole page background green */
+body {
+  background-color: #e7ead7; /* Green background */
+  margin: 10;
+  font-family: Arial, sans-serif;
 }
-.sources-list a {
-    color: #1E3A8A;
-    text-decoration: underline;
+
+/* Chart container styling */
+.chart-container {
+  background-color: #FFFFFF;   /* White card for contrast */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  margin: 40px auto;
+  max-width: 900px;
 }
-.sources-list a:hover {
-    text-decoration: none;
+
+/* Title inside chart */
+.chart-title {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: #1f3d91; /* Dark blue */
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* Chart background */
+canvas {
+  background-color: #F0F8FF; /* Light blue plotting area */
+  border-radius: 8px;
+  padding: 10px;
 }
