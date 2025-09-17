@@ -35,14 +35,6 @@
     <section class="tool-section">
       <div class="content-container">
         <h2 class="section-title">Energy Efficient Thermostat Control System</h2>
-   
-        <!-- Air Conditioner Tariff Selection -->
-<div class="control-column">
-    <label for="tariffselect">Electricity Tariff:</label>
-    <select id="tariffselect">
-        <option value="peak" selected>Peak Hours (28.52 c/kWh)</option>
-        <option value="nonpeak">Non-Peak Hours (24.43 c/kWh)</option>
-    </select>
 
 
         <div class="tool-controls">
@@ -74,14 +66,14 @@
             <div class="savings-display-container">
                 <div class="savings-values-display"> 
                     <p class="estimated-usage-cost-label" id="usage-cost-label">Estimated Usage Cost*</p>
-                    <p class="usage-cost-display" id="usage-cost-value">$0.00</p>
+                    <p class="usage-cost-display" id="usage-cost-value">RM0.00</p>
                     <p class="kwh-usage-display" id="kwh-usage-value">0.0 KWH</p>
                     <p class="savings-caption" id="savings-recommendation-caption">Dynamic recommendation here.</p>
                 </div>
             </div>
         </div>
         <div class="electricity-rate-container">
-            <span class="rate-unit">Calculations are based on a 2.5kW reverse cycle split system air conditioner, operating in a small to medium room (10–20 m²) for 8 hours per day.<br>Estimated costs use the 2025 national average electricity rate of 33c/kWh, and energy usage figures are adapted from Canstar Blue’s air conditioner efficiency review.</span>
+            <span class="rate-unit">Estimated costs use the electricity tariff rate of domestic ToU for off-peak period which is 24.43c/kWh from Tenaga Nasional Berhad (TNB).</span>
         </div>
         <p class="disclaimer">*This tool only provide estimation based on the inputted data by the user.</p>
       </div>
@@ -91,4 +83,114 @@
 
   <script src="calculation.js"></script>
 </body>
+
+<head>
+  <meta charset="UTF-8">
+  <title>ThermaSense Comparison Charts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    .chart-container {
+      width: 80%;
+      margin: auto;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Indoor Temperature Comparison (User vs Non-user)</h2>
+  <div class="chart-container">
+    <canvas id="tempChart"></canvas>
+  </div>
+
+  <h2>Energy Cost Comparison (User vs Non-user)</h2>
+  <div class="chart-container">
+    <canvas id="costChart"></canvas>
+  </div>
+
+  <script>
+    // Days (7 days)
+    const labels = ["Day 1","Day 2","Day 3","Day 4","Day 5","Day 6","Day 7"];
+
+    // Indoor temperature data (°C)
+    const tempData = {
+      labels: labels,
+      datasets: [
+        {
+          label: "Non-user (Fixed 22°C)",
+          data: [21, 21, 21, 21, 21, 21, 21],
+          backgroundColor: "rgba(255, 99, 132, 0.7)"
+        },
+        {
+          label: "User (Adaptive)",
+          data: [24, 24.5, 25, 24.5, 26, 25, 24],
+          backgroundColor: "rgba(54, 162, 235, 0.7)"
+        }
+      ]
+    };
+
+    // Cost data (RM)
+    const costData = {
+      labels: labels,
+      datasets: [
+        {
+          label: "Non-user Cost",
+          data: [2.15, 2.15, 2.15, 2.15, 2.15, 2.15, 2.15],
+          backgroundColor: "rgba(255, 159, 64, 0.7)"
+        },
+        {
+          label: "User Cost",
+          data: [1.36, 1.23, 1.1, 1.23, 0.83, 1.1, 1.36],
+          backgroundColor: "rgba(75, 192, 192, 0.7)"
+        }
+      ]
+    };
+
+    // Temperature chart
+    new Chart(document.getElementById("tempChart"), {
+      type: "bar",
+      data: tempData,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Indoor Temperature Comparison"
+          }
+        },
+        scales: {
+          y: {
+            title: { display: true, text: "Temperature (°C)" }
+          }
+        }
+      }
+    });
+
+    // Cost chart
+    new Chart(document.getElementById("costChart"), {
+      type: "bar",
+      data: costData,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Energy Cost Comparison (RM)"
+          }
+        },
+        scales: {
+          y: {
+            title: { display: true, text: "Cost (RM)" }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+
 </html>
