@@ -46,18 +46,19 @@
                     <button class="control-button" id="outside-temp-decrement">−</button>
                 </div>
 
-                <div class="control-column">
-                    <label for="hours-usage-val">Hours of Usage</label>
-                    <button class="control-button" id="hours-usage-increment">+</button>
-                    <span class="value-display" id="hours-usage-val">8</span>
-                    <button class="control-button" id="hours-usage-decrement">−</button>
-                </div>
 
                 <div class="control-column">
                     <label for="inside-temp-val">Inside Temp °C</label>
                     <button class="control-button" id="inside-temp-increment">+</button>
                     <span class="value-display" id="inside-temp-val">24</span>
                     <button class="control-button" id="inside-temp-decrement">−</button>
+                </div>
+
+                <div class="control-column">
+                    <label for="hours-usage-val">Hours of Usage</label>
+                    <button class="control-button" id="hours-usage-increment">+</button>
+                    <span class="value-display" id="hours-usage-val">8</span>
+                    <button class="control-button" id="hours-usage-decrement">−</button>
                 </div>
 
         
